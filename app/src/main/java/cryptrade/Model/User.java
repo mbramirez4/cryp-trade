@@ -1,16 +1,17 @@
 package cryptrade.Model;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 import cryptrade.Interfaces.Trader;
 
-public class User {
-
-    private String id;
+public class User{
+    private UUID id;
     private String name;
+    private Portfolio portfolio; 
     private float balanceCop;
 
-    public User(String id, String name, float balanceCop){
+    public User(UUID id, String name, float balanceCop){
 
         this.id = id;
         this.name = name;
