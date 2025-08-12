@@ -73,8 +73,9 @@ public class Transaction {
         // modify the user's wallet
     }
 
-    public float sell(){
+    public void sell(){
         float transactionPrice = getTotalPriceCop();
         // check in user's wallet if he has the coin and amount
         user.deposit(amount);
+    }
 }

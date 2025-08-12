@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import cryptrade.Interfaces.Trader;
 
-public class User implements Trader {
+public class User {
 
     private String id;
     private String name;
@@ -26,10 +26,5 @@ public class User implements Trader {
 
     public void withdrawal(float moneyAmount){
         balanceCop -= moneyAmount;
-    }
-
-    public float Transaction(String orderType, float amount, Cryptocurrency coin){
-
-        if (orderType == "BUY_ORDER_TYPE"){ Buy(amount), Sell(amount)}
     }
 }
