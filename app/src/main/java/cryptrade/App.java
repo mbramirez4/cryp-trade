@@ -3,12 +3,56 @@
  */
 package cryptrade;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
+
+import cryptrade.Model.Cryptocurrency;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        String apiUrl = "https://api.coinlore.net/api/tickers/";
+
+        try {
+            // Crear cliente HTTP
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Crear solicitud HTTP
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl))
+                    .GET()
+                    .header("Accept", "application/json")
+                    .build();
+
+            // Enviar solicitud y obtener respuesta
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Analizar la respuesta JSON
+            Gson gson = new Gson();
+            JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
+
+            // Extraer la lista de criptomonedas
+            Cryptocurrency[] cryptocurrenciesArray = gson.fromJson(
+                    jsonResponse.getAsJsonArray("data"), Cryptocurrency[].class);
+
+            // Convertir el array a una lista
+            List<Cryptocurrency> cryptocurrencies = Arrays.asList(cryptocurrenciesArray);
+
+            // Imprimir las cryptocurrencies
+            cryptocurrencies.forEach(System.out::println);
+
+        } catch (Exception e) {
+            System.err.println("Error al consumir la API: " + e.getMessage());
+        }
     }
 }
