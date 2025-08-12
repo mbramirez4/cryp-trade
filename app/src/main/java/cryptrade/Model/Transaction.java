@@ -1,26 +1,58 @@
 package cryptrade.Model;
 
-import java.util.random;
+import java.util.UUID;
 
 public class Transaction {
+    private UUID id;
     private String orderType;
     private float amount;
-    private float priceUsd;
     private Cryptocurrency coin;
-    private float currentPriceUsd;
-    
+    private float priceUsd;
+    private User user;
+    private boolean approved;
 
     public static final String BUY_ORDER_TYPE = "COMPRA";
     public static final String SELL_ORDER_TYPE = "VENTA";
 
     public Transaction(){};
 
-    public Transaction(String orderType, float amount){
-
+    public Transaction(String orderType, float amount, User user) throws IllegalArgumentException {
+        if (orderType == BUY_ORDER_TYPE) {
+            this.orderType = BUY_ORDER_TYPE;
+        } else if (orderType == SELL_ORDER_TYPE) {
+            this.orderType = SELL_ORDER_TYPE;
+        } else {
+            throw new IllegalArgumentException("Invalid orderType: " + orderType);
+        }
+        
+        this.amount = amount;
+        this.user = user;
+        setPriceUsd(coin.getPriceUsd());
     }
 
-    private float fluctuatePrice() {
-        
+    private void setPriceUsd(float price) {
+        double range = (Math.floor(Math.random() * 10) - 5) / 100.0;
+        priceUsd = ((float) range) * price;
+    }
+
+    public float getAmount(){
+        return amount;
+    }
+
+    public UUID getId(){
+        return id;
+    }
+
+    public String getOrderType(){
+        return orderType;
+    }
+
+    public float getPriceUsd() {
+        return priceUsd;
+    }
+
+    public boolean isApproved() {
+        return approved;
     }
 }
 

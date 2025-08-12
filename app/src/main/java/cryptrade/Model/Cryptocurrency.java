@@ -6,6 +6,15 @@ public class Cryptocurrency {
     private String name;
     private String price_usd;
 
+    public Cryptocurrency(){}
+
+    public Cryptocurrency(String id, String symbol, String name, String price_usd){
+        this.id = id;
+        this.symbol = symbol;
+        this.name = name;
+        this.price_usd = price_usd;
+    }
+
     // Getters y setters
     public String getId() {
         return id;
@@ -31,12 +40,8 @@ public class Cryptocurrency {
         this.name = name;
     }
 
-    public String getPrice_usd() {
-        return price_usd;
-    }
-
-    public void setPrice_usd(String price_usd) {
-        this.price_usd = price_usd;
+    public float getPriceUsd() {
+        return Float.valueOf(price_usd);
     }
 
     @Override
@@ -48,4 +53,12 @@ public class Cryptocurrency {
                 ", price_usd='" + price_usd + '\'' +
                 '}';
     }
+
+    // public static void main(String[] args) {
+    //     Cryptocurrency coin = Cryptocurrency(
+    //         "", "", "", "11.27"
+    //     )
+    //     System.out.println(coin.getPriceUsd())
+    // }
+    
 }
