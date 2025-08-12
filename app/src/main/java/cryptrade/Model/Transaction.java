@@ -7,9 +7,10 @@ public class Transaction {
     private String orderType;
     private float amount;
     private Cryptocurrency coin;
-    private float priceUsd;
     private User user;
+    
     private boolean approved;
+    private float currencyPriceUsd;
 
     public static final String BUY_ORDER_TYPE = "COMPRA";
     public static final String SELL_ORDER_TYPE = "VENTA";
@@ -18,7 +19,13 @@ public class Transaction {
 
     public Transaction(){};
 
-    public Transaction(String orderType, float amount, User user) throws IllegalArgumentException {
+    public Transaction(
+        UUID id,
+        String orderType,
+        float amount,
+        Cryptocurrency coin,
+        User user
+    ) throws IllegalArgumentException {
         if (orderType == BUY_ORDER_TYPE) {
             this.orderType = BUY_ORDER_TYPE;
         } else if (orderType == SELL_ORDER_TYPE) {
@@ -27,14 +34,16 @@ public class Transaction {
             throw new IllegalArgumentException("Invalid orderType: " + orderType);
         }
         
+        this.id = id;
         this.amount = amount;
+        this.coin = coin;
         this.user = user;
-        setPriceUsd(coin.getPriceUsd());
+        setCurrencyPriceUsd(coin.getPriceUsd());
     }
 
-    private void setPriceUsd(float price) {
+    private void setCurrencyPriceUsd(float price) {
         double range = (Math.floor(Math.random() * 10) - 5) / 100.0;
-        priceUsd = ((float) range) * price;
+        currencyPriceUsd = ((float) range) * price;
     }
 
     public float getAmount(){
@@ -49,8 +58,8 @@ public class Transaction {
         return orderType;
     }
 
-    public float getPriceUsd() {
-        return priceUsd;
+    public float getCurrencyPriceUsd() {
+        return currencyPriceUsd;
     }
 
     public boolean isApproved() {
@@ -58,7 +67,7 @@ public class Transaction {
     }
 
     public float getTotalPriceCop(){
-        return priceUsd * amount * USD_TO_COP;
+        return currencyPriceUsd * amount * USD_TO_COP;
     }
 
     public void buy(float amount){
@@ -68,14 +77,20 @@ public class Transaction {
             return;
         }
 
-        approved = true;
         user.withdrawal(transactionPrice);
-        // modify the user's wallet
+        user.getPortfolio().increaseStock(coin, amount);
+        approved = true;
     }
 
     public void sell(){
+        if (user.getPortfolio().getStock(coin) < amount){
+            approved = false;
+            return;
+        }
+        
         float transactionPrice = getTotalPriceCop();
-        // check in user's wallet if he has the coin and amount
-        user.deposit(amount);
+        user.getPortfolio().decreaseStock(coin, amount);
+        user.deposit(transactionPrice);
+        approved = true;
     }
 }

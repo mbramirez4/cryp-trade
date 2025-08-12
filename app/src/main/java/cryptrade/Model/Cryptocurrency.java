@@ -4,7 +4,7 @@ public class Cryptocurrency {
     private String id;
     private String symbol;
     private String name;
-    private String price_usd;
+    protected String price_usd;
 
     public Cryptocurrency(){}
 
@@ -15,7 +15,6 @@ public class Cryptocurrency {
         this.price_usd = price_usd;
     }
 
-    // Getters y setters
     public String getId() {
         return id;
     }
@@ -52,6 +51,28 @@ public class Cryptocurrency {
                 ", name='" + name + '\'' +
                 ", price_usd='" + price_usd + '\'' +
                 '}';
+    }
+
+    public Cryptocurrency copy(){
+        Cryptocurrency coin = new Cryptocurrency(this.id, this.symbol, this.name, this.price_usd);
+        return coin;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        
+        if (o instanceof Cryptocurrency) {
+            Cryptocurrency coin = (Cryptocurrency) o;
+            return (
+                this.id.equals(coin.id)
+                && this.symbol.equals(coin.symbol)
+                && this.name.equals(coin.name)
+                && this.price_usd.equals(coin.price_usd)
+            );
+        }
+
+        return false;
     }
 
     // public static void main(String[] args) {

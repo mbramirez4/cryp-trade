@@ -1,6 +1,5 @@
 package cryptrade.Model;
 
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import cryptrade.Interfaces.Trader;
@@ -27,5 +26,9 @@ public class User{
 
     public void withdrawal(float moneyAmount){
         balanceCop -= moneyAmount;
+    }
+
+    public Portfolio getPortfolio(){
+        return portfolio;
     }
 }
