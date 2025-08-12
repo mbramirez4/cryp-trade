@@ -1,6 +1,7 @@
 package cryptrade.Model;
 
-public class UserCoin extends Cryptocurrency {
+public class UserCoin {
+    private Cryptocurrency coin;
     private float stock;
 
     public UserCoin(){}
@@ -10,8 +11,7 @@ public class UserCoin extends Cryptocurrency {
     }
 
     public UserCoin(Cryptocurrency coin, float stock){
-        super(coin.getId(), coin.getSymbol(), coin.getName(), coin.price_usd);
-        
+        this.coin = coin;
         this.stock = stock;
     }
     
@@ -25,5 +25,9 @@ public class UserCoin extends Cryptocurrency {
 
     public void decreaseStock(float amount) {
         this.stock -= amount;
+    }
+
+    public Cryptocurrency getCoin() {
+        return coin;
     }
 }

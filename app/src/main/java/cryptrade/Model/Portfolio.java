@@ -23,9 +23,9 @@ public class Portfolio {
         size++;
     }
 
-    public int getUserCoinIndex(UserCoin coin){
+    public int getUserCoinIndex(Cryptocurrency coin){
         for (int i = 0; i < size; i++){
-            if (userCoins[i].equals(coin)){
+            if (userCoins[i].getCoin().equals(coin)){
                 return i-1;
             }
         }
@@ -33,7 +33,7 @@ public class Portfolio {
         return -1;
     }
 
-    public UserCoin getUserCoinItem(UserCoin coin){
+    public UserCoin getUserCoinItem(Cryptocurrency coin){
         int index = getUserCoinIndex(coin);
         if (index >= 0){
             return userCoins[index];
@@ -47,9 +47,9 @@ public class Portfolio {
     // the portfolio to avoid changing the objects in the available
     // cryptocurrencies ArrayList.
     public void increaseStock(Cryptocurrency coin, float amount){
-        UserCoin userCoin = getUserCoinItem((UserCoin) coin);
+        UserCoin userCoin = getUserCoinItem(coin);
         if (userCoin == null){
-            UserCoin newUserCoin = (UserCoin) coin.copy();
+            UserCoin newUserCoin = new UserCoin(coin.copy());
 
             userCoin = newUserCoin;
             addUserCoin(userCoin);
@@ -64,7 +64,7 @@ public class Portfolio {
             return false;
         }
 
-        UserCoin userCoin = getUserCoinItem((UserCoin) coin);
+        UserCoin userCoin = getUserCoinItem(coin);
         if (userCoin != null){
             userCoin.decreaseStock(amount);
         }
@@ -73,7 +73,7 @@ public class Portfolio {
     }
 
     public float getStock(Cryptocurrency coin){
-        UserCoin userCoin = getUserCoinItem((UserCoin) coin);
+        UserCoin userCoin = getUserCoinItem(coin);
         if (userCoin != null){
             return userCoin.getStock();
         }
