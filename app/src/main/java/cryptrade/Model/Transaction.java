@@ -14,6 +14,8 @@ public class Transaction {
     public static final String BUY_ORDER_TYPE = "COMPRA";
     public static final String SELL_ORDER_TYPE = "VENTA";
 
+    public static final float USD_TO_COP = 4000;
+
     public Transaction(){};
 
     public Transaction(String orderType, float amount, User user) throws IllegalArgumentException {
@@ -54,6 +56,25 @@ public class Transaction {
     public boolean isApproved() {
         return approved;
     }
+
+    public float getTotalPriceCop(){
+        return priceUsd * amount * USD_TO_COP;
+    }
+
+    public void buy(float amount){
+        float transactionPrice = getTotalPriceCop();
+        if(user.getBalanceCop() < transactionPrice){
+            approved = false;
+            return;
+        }
+
+        approved = true;
+        user.withdrawal(transactionPrice);
+        // modify the user's wallet
+    }
+
+    public float sell(){
+        float transactionPrice = getTotalPriceCop();
+        // check in user's wallet if he has the coin and amount
+        user.deposit(amount);
 }
-
-
