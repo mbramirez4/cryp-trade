@@ -1,8 +1,11 @@
 package cryptrade.Interfaces;
 
-import cryptrade.Model.Cryptocurrency;
-import cryptrade.Model.Transaction;
+import cryptrade.Model.Portfolio;
 
 public interface Trader {
-    Transaction operate(String orderType, float amount, Cryptocurrency coin);
+    void deposit(float moneyAmount);
+    void withdrawal(float moneyAmount);
+    void registerOperation(Operation operation) throws IllegalArgumentException;
+    float getBalanceCop();
+    Portfolio getPortfolio();
 }

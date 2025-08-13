@@ -2,16 +2,17 @@ package cryptrade.Service;
 
 import cryptrade.Model.Cryptocurrency;
 import cryptrade.Model.Transaction;
-import cryptrade.Model.User;
+
+import cryptrade.Interfaces.Trader;
 
 public class TransactionsProcessor {
-    User user;
+    Trader user;
     Transaction transaction;
 
     public TransactionsProcessor(){
     }
 
-    public TransactionsProcessor(User user, Transaction transaction){
+    public TransactionsProcessor(Trader user, Transaction transaction){
         this.user = user;
         this.transaction = transaction;
     }
@@ -55,6 +56,6 @@ public class TransactionsProcessor {
             sell(amount);
         }
         
-        user.addTransaction(transaction);
+        user.registerOperation(transaction);
     }
 }

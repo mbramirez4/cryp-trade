@@ -3,7 +3,9 @@ package cryptrade.Model;
 import java.util.UUID;
 import java.util.Random;
 
-public class Transaction {
+import cryptrade.Interfaces.Operation;
+
+public class Transaction implements Operation {
     private UUID id;
     private String orderType;
     private float amount;

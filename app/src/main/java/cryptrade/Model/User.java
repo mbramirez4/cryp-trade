@@ -3,8 +3,9 @@ package cryptrade.Model;
 import java.util.UUID;
 
 import cryptrade.Interfaces.Trader;
+import cryptrade.Interfaces.Operation;
 
-public class User{
+public class User implements Trader{
     private UUID id;
     private String name;
     private float balanceCop;
@@ -13,11 +14,11 @@ public class User{
     private Transaction[] transactionHistory;
     private int transactionHistorySize;
 
+    private static final int DEFAULT_CAPACITY = 2;
+    
     public User(String name, float balanceCop){
         this(UUID.randomUUID(), name, balanceCop);
     }
-
-    private static final int DEFAULT_CAPACITY = 2;
 
     public User(UUID id, String name, float balanceCop){
         this.id = id;
@@ -28,7 +29,7 @@ public class User{
         this.transactionHistorySize = 0;
     }
 
-    public void addTransaction(Transaction transaction){
+    public void registerOperation(Operation transaction) throws IllegalArgumentException{
         if (transactionHistorySize >= transactionHistory.length){
             Transaction[] newTransactions = new Transaction[transactionHistory.length * 2];
             System.arraycopy(transactionHistory, 0, newTransactions, 0, transactionHistory.length);
@@ -36,8 +37,12 @@ public class User{
             transactionHistory = newTransactions;
         }
 
-        transactionHistory[transactionHistorySize] = transaction;
-        transactionHistorySize++;
+        if (transaction instanceof Transaction){
+            transactionHistory[transactionHistorySize] = (Transaction) transaction;
+            transactionHistorySize++;
+        } else {
+            throw new IllegalArgumentException("Invalid transaction type: " + transaction.getClass().getName());
+        }
     }
 
     public UUID getId(){
