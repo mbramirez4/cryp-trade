@@ -3,12 +3,10 @@
  */
 package cryptrade;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import cryptrade.Service.Market;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        Market.market();
     }
 }
