@@ -1,6 +1,7 @@
 package cryptrade.Model;
 
 import java.util.UUID;
+import java.util.Random;
 
 public class Transaction {
     private UUID id;
@@ -42,8 +43,12 @@ public class Transaction {
     }
 
     private void setCurrencyPriceUsd(float price) {
-        double range = (Math.floor(Math.random() * 10) - 5) / 100.0;
-        currencyPriceUsd = ((float) range) * price;
+        float delta = new Random().nextBoolean() ? 0.05f : -0.05f;
+        currencyPriceUsd = price * (1 + delta);
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public float getAmount(){
@@ -66,31 +71,32 @@ public class Transaction {
         return approved;
     }
 
+    public void setApproved(){
+        approved = true;
+    }
+
+    public void setRejected(){
+        approved = false;
+    }
+
     public float getTotalPriceCop(){
         return currencyPriceUsd * amount * USD_TO_COP;
     }
 
-    public void buy(float amount){
-        float transactionPrice = getTotalPriceCop();
-        if(user.getBalanceCop() < transactionPrice){
-            approved = false;
-            return;
-        }
-
-        user.withdrawal(transactionPrice);
-        user.getPortfolio().increaseStock(coin, amount);
-        approved = true;
+    public Cryptocurrency getTradingCryptocurrency() {
+        return coin;
     }
 
-    public void sell(){
-        if (user.getPortfolio().getStock(coin) < amount){
-            approved = false;
-            return;
-        }
-        
-        float transactionPrice = getTotalPriceCop();
-        user.getPortfolio().decreaseStock(coin, amount);
-        user.deposit(transactionPrice);
-        approved = true;
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", orderType='" + orderType + '\'' +
+                ", amount=" + amount +
+                ", coin=" + coin +
+                ", user=" + user.getName() +
+                ", approved=" + approved +
+                ", currencyPriceUsd=" + currencyPriceUsd +
+                '}';
     }
 }
