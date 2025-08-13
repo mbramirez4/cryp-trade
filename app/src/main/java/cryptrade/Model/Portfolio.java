@@ -1,46 +1,28 @@
 package cryptrade.Model;
 
+import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.bag.HashBag;
+
 public class Portfolio {
     // this should have been a bag of UserCoins but we didn't thought
     // about that in the beginning. A bag works fine here as we don't
     // need to know the order of the coins, only to know if we have
     // a certain cryptocurrency in the portfolio.
-    UserCoin[] userCoins;
-    int size;
-
-    private static final int DEFAULT_CAPACITY = 2;
+    Bag<UserCoin> userCoins;
 
     Portfolio(){
-        this.size = 0;
-        this.userCoins = new UserCoin[DEFAULT_CAPACITY];
+        this.userCoins = new HashBag<>();
     }
 
     private void addUserCoin(UserCoin userCoin){
-        // check if the array still has space, if not it creates a new array
-        if (size >= userCoins.length){
-            UserCoin[] newUserCoins = new UserCoin[userCoins.length * 2];
-            System.arraycopy(userCoins, 0, newUserCoins, 0, userCoins.length);
-            userCoins = newUserCoins;
-        }
-
-        userCoins[size] = userCoin;
-        size++;
-    }
-
-    public int getUserCoinIndex(Cryptocurrency coin){
-        for (int i = 0; i < size; i++){
-            if (userCoins[i].getCoin().equals(coin)){
-                return i-1;
-            }
-        }
-
-        return -1;
+        userCoins.add(userCoin);
     }
 
     public UserCoin getUserCoinItem(Cryptocurrency coin){
-        int index = getUserCoinIndex(coin);
-        if (index >= 0){
-            return userCoins[index];
+        for (UserCoin userCoin : userCoins){
+            if (userCoin.getCoin().equals(coin)){
+                return userCoin;
+            }
         }
 
         return null;
@@ -63,16 +45,18 @@ public class Portfolio {
     }
 
     // returns false if the amount to decrease is greater than the stock
+    // or if the coin is not in the portfolio
     public boolean decreaseStock(Cryptocurrency coin, float amount){
-        if (amount > getStock(coin)){
+        UserCoin userCoin = getUserCoinItem(coin);
+        if (userCoin == null){
             return false;
         }
-
-        UserCoin userCoin = getUserCoinItem(coin);
-        if (userCoin != null){
-            userCoin.decreaseStock(amount);
+        
+        if (amount > getStock(coin)) {
+            return false;
         }
-
+        
+        userCoin.decreaseStock(amount);
         return true;
     }
 
