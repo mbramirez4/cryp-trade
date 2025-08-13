@@ -1,10 +1,16 @@
 package cryptrade.Service;
 
-import cryptrade.Model.Cryptocurrency;
+import cryptrade.Interfaces.Trader;
+import cryptrade.Interfaces.Operation;
 import cryptrade.Model.Transaction;
+import cryptrade.Model.Cryptocurrency;
+import cryptrade.Model.OrderType;
 import cryptrade.Model.User;
 
 import java.util.UUID;
+
+import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.bag.HashBag;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -18,23 +24,7 @@ import java.util.Queue;
 import java.util.Random;
 
 public class Market {
-    public static User getUserFromId(UUID id, User[] usersArray){
-        for (User user : usersArray) {
-            if (user.getId().equals(id)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
     public static void market() {
-        User[] usersArray = new User[5];
-        usersArray[0] = new User("User 1", 1_000_000_000);
-        usersArray[1] = new User("User 2", 2_000_000_000);
-        usersArray[2] = new User("User 3", 300_000_000);
-        usersArray[3] = new User("User 4", 400_000_000);
-        usersArray[4] = new User("User 5", 500_000_000);
-
         String apiUrl = "https://api.coinlore.net/api/tickers/";
         Cryptocurrency[] cryptocurrenciesArray;
         try {
@@ -63,55 +53,49 @@ public class Market {
             return;
         }
 
-        Transaction transaction;
-        User transactionUser;
-        TransactionsProcessor transactionsProcessor;
+        // Bags are used to store the users as we don't actually care
+        // about the order of the users, we only need to store them,
+        // and retrieve them from the uniqueSet when neeeded
+        Bag<Trader> users = new HashBag<>();
+        users.add(new User("User 1", 1_000_000_000));
+        users.add(new User("User 2", 2_000_000_000));
+        users.add(new User("User 3", 300_000_000));
+        users.add(new User("User 4", 400_000_000));
+        users.add(new User("User 5", 500_000_000));
 
         // A queue is used to store market orders as it makes more
         // sense to process them in order (first market order in should
         // be processed first - FIFO)
-        Queue<Transaction> marketOrders = new LinkedList<>();
+        Queue<Operation> marketOrders = new LinkedList<>();
+
+        TransactionsProcessor transactionsProcessor = new TransactionsProcessor(users, marketOrders);
+
+        Operation transaction;
 
         for (int i = 0; i < 5; i++) {
             System.out.println("Enqueuing Market Orders in the round " + (i + 1) + ":");
-            for (User user : usersArray) {
-                System.out.println("User: " + user.getName());
+            for (Trader user : users) {
+                System.out.println("User: " + user);
                 transaction = getRandomTransaction(user, cryptocurrenciesArray);
                 marketOrders.add(transaction);
             }
 
             System.out.println("\nProcessing Market Orders in the round " + (i + 1) + ":");
-            while (!marketOrders.isEmpty()) {
-                transaction = marketOrders.poll();
-                System.out.println("Transaction: " + transaction);
-
-                transactionUser = getUserFromId(transaction.getUserId(), usersArray);
-                if (transactionUser == null) {
-                    System.out.println("User not found for transaction: " + transaction);
-                    continue;
-                }
-
-                transactionsProcessor = new TransactionsProcessor(transactionUser, transaction);
-                transactionsProcessor.performOperation();
-                
-                System.out.println("Transaction approved: " + transaction.isApproved());
-            }
-
-            System.out.println();
+            transactionsProcessor.processTransactions();
         }
     }
 
-    public static Transaction getRandomTransaction(User user, Cryptocurrency[] cryptocurrencies){
+    private static Transaction getRandomTransaction(Trader user, Cryptocurrency[] cryptocurrencies){
         Cryptocurrency coin = cryptocurrencies[new Random().nextInt(cryptocurrencies.length)];
-        String orderType = new Random().nextBoolean() ? Transaction.BUY_ORDER_TYPE : Transaction.SELL_ORDER_TYPE;
+        OrderType orderType = new Random().nextBoolean() ? OrderType.BUY : OrderType.SELL;
         float amount = new Random().nextFloat() * 100;
         
         Transaction transaction = new Transaction(
             UUID.randomUUID(),
-            orderType,
+            user.getId(),
             amount,
-            coin,
-            user.getId()
+            orderType,
+            coin
         );
         
         return transaction;
