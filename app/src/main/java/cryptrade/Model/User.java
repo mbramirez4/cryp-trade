@@ -5,16 +5,18 @@ import java.util.UUID;
 import cryptrade.Interfaces.Trader;
 import cryptrade.Interfaces.Operation;
 
+import java.util.Stack;
+
 public class User implements Trader{
     private UUID id;
     private String name;
     private float balanceCop;
     
-    private Portfolio portfolio; 
-    private Transaction[] transactionHistory;
-    private int transactionHistorySize;
+    private Portfolio portfolio;
 
-    private static final int DEFAULT_CAPACITY = 2;
+    // A stack is used to store the transactions as it makes more sense
+    // for the user to see the most recent transactions first (LIFO)
+    private Stack<Transaction> transactionHistory;
     
     public User(String name, float balanceCop){
         this(UUID.randomUUID(), name, balanceCop);
@@ -25,21 +27,12 @@ public class User implements Trader{
         this.name = name;
         this.balanceCop = balanceCop;
         this.portfolio = new Portfolio();
-        this.transactionHistory = new Transaction[DEFAULT_CAPACITY];
-        this.transactionHistorySize = 0;
+        this.transactionHistory = new Stack<>();
     }
 
     public void registerOperation(Operation transaction) throws IllegalArgumentException{
-        if (transactionHistorySize >= transactionHistory.length){
-            Transaction[] newTransactions = new Transaction[transactionHistory.length * 2];
-            System.arraycopy(transactionHistory, 0, newTransactions, 0, transactionHistory.length);
-            
-            transactionHistory = newTransactions;
-        }
-
         if (transaction instanceof Transaction){
-            transactionHistory[transactionHistorySize] = (Transaction) transaction;
-            transactionHistorySize++;
+            transactionHistory.push((Transaction) transaction);
         } else {
             throw new IllegalArgumentException("Invalid transaction type: " + transaction.getClass().getName());
         }

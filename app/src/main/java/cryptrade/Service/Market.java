@@ -66,6 +66,10 @@ public class Market {
         Transaction transaction;
         User transactionUser;
         TransactionsProcessor transactionsProcessor;
+
+        // A queue is used to store market orders as it makes more
+        // sense to process them in order (first market order in should
+        // be processed first - FIFO)
         Queue<Transaction> marketOrders = new LinkedList<>();
 
         for (int i = 0; i < 5; i++) {
