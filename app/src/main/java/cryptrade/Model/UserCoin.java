@@ -30,4 +30,13 @@ public class UserCoin {
     public Cryptocurrency getCoin() {
         return coin;
     }
+
+    @Override
+    public String toString() {
+        return "UserCoin{" +
+                "coinSymbol=" + coin.getSymbol() +
+                ", coinName=" + coin.getName() +
+                ", stock=" + stock +
+                '}';
+    }
 }

@@ -67,7 +67,8 @@ public class User implements Trader{
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", balanceCop=" + balanceCop +
+                ", balanceCop=" + String.format("%15.2f", balanceCop) +
+                ", portfolio=" + portfolio +
                 '}';
     }
 
