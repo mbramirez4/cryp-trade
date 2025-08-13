@@ -61,4 +61,25 @@ public class User implements Trader{
     public Portfolio getPortfolio(){
         return portfolio;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", balanceCop=" + balanceCop +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        
+        if (o instanceof User){
+            User user = (User) o;
+            return id.equals(user.id);
+        }
+
+        return false;
+    }
 }
