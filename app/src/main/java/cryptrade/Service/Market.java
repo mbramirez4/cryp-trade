@@ -5,17 +5,11 @@ import cryptrade.Interfaces.Operation;
 import cryptrade.Model.Transaction;
 import cryptrade.Model.Cryptocurrency;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -52,32 +46,15 @@ public class Market {
     }
 
     private void setCryptocurrencies() throws Exception {
-        String apiUrl = "https://api.coinlore.net/api/tickers/";
-        
-        logger.info("Fetching cryptocurrencies started");
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .GET()
-                .header("Accept", "application/json")
-                .build();
-        logger.info("Http request created");
-
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            logger.info("Http response received");
-
-            Gson gson = new Gson();
-            JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
-
-            cryptocurrencies = gson.fromJson(
-                jsonResponse.getAsJsonArray("data"), Cryptocurrency[].class
+            cryptocurrencies = FilesManager.getDataFromApi(
+                "https://api.coinlore.net/api/tickers/",
+                "data",
+                Cryptocurrency[].class
             );
-            logger.info("Data successfully parsed into the cryptocurrencies array");
         } catch (Exception e) {
-            throw new Exception("Error fetching cryptocurrencies: " + e.getMessage());
+            throw new Exception(e.getMessage());
         }
-        logger.info("Cryptocurrencies fetched successfully");
     }
 
     public void registerUser(Trader user) {
@@ -111,5 +88,9 @@ public class Market {
 
             transactionsProcessor.processTransactions();
         }
+    }
+
+    public void createReport(String fileName) {
+        FilesManager.saveToJson(fileName, users);
     }
 }

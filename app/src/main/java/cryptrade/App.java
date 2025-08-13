@@ -23,5 +23,7 @@ public class App {
         market.registerUser(new User("User 5", 500_000_000));
 
         market.emulateMarket();
+
+        market.createReport("final_report.json");
     }
 }
