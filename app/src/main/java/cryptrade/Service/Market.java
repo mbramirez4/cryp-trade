@@ -27,7 +27,7 @@ public class Market {
         return null;
     }
 
-    public static void main(String[] args) {
+    public static void market() {
         User[] usersArray = new User[5];
         usersArray[0] = new User("User 1", 1_000_000_000);
         usersArray[1] = new User("User 2", 2_000_000_000);
