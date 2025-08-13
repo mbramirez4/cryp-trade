@@ -1,6 +1,10 @@
 package cryptrade.Model;
 
 public class Portfolio {
+    // this should have been a bag of UserCoins but we didn't thought
+    // about that in the beginning. A bag works fine here as we don't
+    // need to know the order of the coins, only to know if we have
+    // a certain cryptocurrency in the portfolio.
     UserCoin[] userCoins;
     int size;
 
