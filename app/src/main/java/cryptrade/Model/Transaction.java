@@ -85,6 +85,18 @@ public class Transaction implements Operation {
         return coin;
     }
 
+    public static Transaction createRandomOperation(UUID userId, float maxAmount,Cryptocurrency[] cryptocurrencies){
+        Random random = new Random();
+        
+        return new Transaction(
+            UUID.randomUUID(),
+            userId,
+            random.nextFloat() * maxAmount,
+            random.nextBoolean() ? OrderType.BUY : OrderType.SELL,
+            cryptocurrencies[random.nextInt(cryptocurrencies.length)]
+        );        
+    }
+
     @Override
     public String toString() {
         return "Transaction{" +

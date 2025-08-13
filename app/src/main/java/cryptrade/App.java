@@ -3,10 +3,25 @@
  */
 package cryptrade;
 
+import cryptrade.Model.User;
 import cryptrade.Service.Market;
 
 public class App {
     public static void main(String[] args) {
-        Market.market();
+        Market market;
+        try {
+             market = new Market();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        market.registerUser(new User("User 1", 100_000_000));
+        market.registerUser(new User("User 2", 200_000_000));
+        market.registerUser(new User("User 3", 300_000_000));
+        market.registerUser(new User("User 4", 400_000_000));
+        market.registerUser(new User("User 5", 500_000_000));
+
+        market.emulateMarket();
     }
 }
