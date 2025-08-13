@@ -7,16 +7,12 @@ import cryptrade.Interfaces.Operation;
 
 public class Transaction implements Operation {
     private UUID id;
-    private String orderType;
-    private float amount;
-    private Cryptocurrency coin;
     private UUID userId;
-    
-    private boolean approved;
+    private float amount;
     private float currencyPriceUsd;
-
-    public static final String BUY_ORDER_TYPE = "COMPRA";
-    public static final String SELL_ORDER_TYPE = "VENTA";
+    private boolean approved;
+    private OrderType orderType;
+    private Cryptocurrency coin;
 
     public static final float USD_TO_COP = 4000;
 
@@ -24,15 +20,15 @@ public class Transaction implements Operation {
 
     public Transaction(
         UUID id,
-        String orderType,
+        UUID userId,
         float amount,
-        Cryptocurrency coin,
-        UUID userId
+        OrderType orderType,
+        Cryptocurrency coin
     ) throws IllegalArgumentException {
-        if (orderType == BUY_ORDER_TYPE) {
-            this.orderType = BUY_ORDER_TYPE;
-        } else if (orderType == SELL_ORDER_TYPE) {
-            this.orderType = SELL_ORDER_TYPE;
+        if (orderType == OrderType.BUY) {
+            this.orderType = OrderType.BUY;
+        } else if (orderType == OrderType.SELL) {
+            this.orderType = OrderType.SELL;
         } else {
             throw new IllegalArgumentException("Invalid orderType: " + orderType);
         }
@@ -61,7 +57,7 @@ public class Transaction implements Operation {
         return id;
     }
 
-    public String getOrderType(){
+    public OrderType getOrderType(){
         return orderType;
     }
 
@@ -93,10 +89,10 @@ public class Transaction implements Operation {
     public String toString() {
         return "Transaction{" +
                 "id=" + id +
-                ", orderType='" + orderType + '\'' +
-                ", amount=" + amount +
-                ", coin=" + coin +
                 ", userId=" + userId +
+                ", amount=" + amount +
+                ", orderType='" + orderType + '\'' +
+                ", coin=" + coin +
                 ", approved=" + approved +
                 ", currencyPriceUsd=" + currencyPriceUsd +
                 '}';
