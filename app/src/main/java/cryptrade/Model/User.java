@@ -16,7 +16,7 @@ public class User implements Trader{
 
     // A stack is used to store the transactions as it makes more sense
     // for the user to see the most recent transactions first (LIFO)
-    private Stack<Transaction> transactionHistory;
+    private Stack<Operation> transactionHistory;
     
     public User(String name, float balanceCop){
         this(UUID.randomUUID(), name, balanceCop);
@@ -30,12 +30,8 @@ public class User implements Trader{
         this.transactionHistory = new Stack<>();
     }
 
-    public void registerOperation(Operation transaction) throws IllegalArgumentException{
-        if (transaction instanceof Transaction){
-            transactionHistory.push((Transaction) transaction);
-        } else {
-            throw new IllegalArgumentException("Invalid transaction type: " + transaction.getClass().getName());
-        }
+    public void registerOperation(Operation transaction){
+        transactionHistory.push(transaction);
     }
 
     public UUID getId(){
@@ -60,6 +56,10 @@ public class User implements Trader{
 
     public Portfolio getPortfolio(){
         return portfolio;
+    }
+
+    public Stack<Operation> getTransactionHistory(){
+        return transactionHistory;
     }
 
     @Override
