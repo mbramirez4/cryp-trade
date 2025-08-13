@@ -3,6 +3,9 @@ package cryptrade.Service;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
 
@@ -14,6 +17,8 @@ import cryptrade.Model.Cryptocurrency;
 public class TransactionsProcessor {
     private Bag<Trader> users;
     private Queue<Operation> marketOrders;
+
+    private static final Logger logger = LogManager.getLogger(TransactionsProcessor.class.getName());
 
     public TransactionsProcessor(){
         this(new HashBag<>(), new LinkedList<>());
@@ -67,6 +72,7 @@ public class TransactionsProcessor {
         OrderType orderType = transaction.getOrderType();
         float amount = transaction.getAmount();
 
+        logger.info("Started performing transaction: " + transaction + "\nCurrent user state: " + user);
         if (orderType == OrderType.BUY) {
             buy(user, transaction, amount);
         } else if (orderType == OrderType.BUY) {
@@ -76,36 +82,44 @@ public class TransactionsProcessor {
         if (!transaction.isApproved()){
             throw new Exception("Transaction not approved");
         }
-
+        
+        logger.info("Finished performing transaction: " + transaction + "\nCurrent user state: " + user);
+        
         user.registerOperation(transaction);
     }
 
-    private void processTransaction(){
+    private void processTransaction() throws Exception{
         Operation transaction = marketOrders.poll();
         if (transaction == null){
-            // add log here no transactions to process
+            logger.warn("No market orders to process");
             return;
         }
         
         Trader user = getUserFromId(transaction.getUserId());
         if (user == null){
-            // add log here no user
-            return;
+            throw new Exception("User not found for transaction: " + transaction);
         }
         
         try {
             performOperation(user, transaction);
         } catch (Exception e) {
-            // add log here exception
-            return;
+            throw new Exception("Error processing transaction: " + transaction, e);
         }
-        // add log here single transaction processed
+
+        logger.info("Transaction processed successfully: " + transaction);
     }
 
     public void processTransactions(){
+        logger.info("Processing market orders");
         while (!marketOrders.isEmpty()){
-            processTransaction();
+            try {
+                processTransaction();
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                continue;
+            }
         }
-        // add log here all transactions processed
+
+        logger.info("All market orders processed");
     }
 }

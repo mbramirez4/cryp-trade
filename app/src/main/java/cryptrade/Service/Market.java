@@ -4,16 +4,13 @@ import cryptrade.Interfaces.Trader;
 import cryptrade.Interfaces.Operation;
 import cryptrade.Model.Transaction;
 import cryptrade.Model.Cryptocurrency;
-import cryptrade.Model.OrderType;
-import cryptrade.Model.User;
-
-import java.util.UUID;
-
-import org.apache.commons.collections4.Bag;
-import org.apache.commons.collections4.bag.HashBag;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.bag.HashBag;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,80 +21,95 @@ import java.util.Queue;
 import java.util.Random;
 
 public class Market {
-    public static void market() {
-        String apiUrl = "https://api.coinlore.net/api/tickers/";
-        Cryptocurrency[] cryptocurrenciesArray;
+    // Bags are used to store the users as we don't actually care
+    // about the order of the users, we only need to store them,
+    // and retrieve them from the uniqueSet when neeeded
+    private Bag<Trader> users;
+
+    // A queue is used to store market orders as it makes more
+    // sense to process them in order (first market order in should
+    // be processed first - FIFO)
+    private Queue<Operation> marketOrders;
+    private Cryptocurrency[] cryptocurrencies;
+    private TransactionsProcessor transactionsProcessor;
+
+    private static final Logger logger = LogManager.getLogger(Market.class.getName());
+
+    public Market() throws Exception {
+        this(new HashBag<>(), new LinkedList<>());
+    }
+
+    public Market(Bag<Trader> users, Queue<Operation> marketOrders) throws Exception {
         try {
-            // Crear cliente HTTP
-            HttpClient client = HttpClient.newHttpClient();
+            setCryptocurrencies();
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
 
-            // Crear solicitud HTTP
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(apiUrl))
-                    .GET()
-                    .header("Accept", "application/json")
-                    .build();
+        this.users = users;
+        this.marketOrders = marketOrders;
+        this.transactionsProcessor = new TransactionsProcessor(users, marketOrders);
+    }
 
-            // Enviar solicitud y obtener respuesta
+    private void setCryptocurrencies() throws Exception {
+        String apiUrl = "https://api.coinlore.net/api/tickers/";
+        
+        logger.info("Fetching cryptocurrencies started");
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .GET()
+                .header("Accept", "application/json")
+                .build();
+        logger.info("Http request created");
+
+        try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            logger.info("Http response received");
 
-            // Analizar la respuesta JSON
             Gson gson = new Gson();
             JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
 
-            // Extraer la lista de criptomonedas
-            cryptocurrenciesArray = gson.fromJson(
-                    jsonResponse.getAsJsonArray("data"), Cryptocurrency[].class);
+            cryptocurrencies = gson.fromJson(
+                jsonResponse.getAsJsonArray("data"), Cryptocurrency[].class
+            );
+            logger.info("Data successfully parsed into the cryptocurrencies array");
         } catch (Exception e) {
-            System.err.println("Error al consumir la API: " + e.getMessage());
+            throw new Exception("Error fetching cryptocurrencies: " + e.getMessage());
+        }
+        logger.info("Cryptocurrencies fetched successfully");
+    }
+
+    public void registerUser(Trader user) {
+        if (users.contains(user)) {
+            logger.warn("User already registered: " + user);
             return;
         }
 
-        // Bags are used to store the users as we don't actually care
-        // about the order of the users, we only need to store them,
-        // and retrieve them from the uniqueSet when neeeded
-        Bag<Trader> users = new HashBag<>();
-        users.add(new User("User 1", 1_000_000_000));
-        users.add(new User("User 2", 2_000_000_000));
-        users.add(new User("User 3", 300_000_000));
-        users.add(new User("User 4", 400_000_000));
-        users.add(new User("User 5", 500_000_000));
-
-        // A queue is used to store market orders as it makes more
-        // sense to process them in order (first market order in should
-        // be processed first - FIFO)
-        Queue<Operation> marketOrders = new LinkedList<>();
-
-        TransactionsProcessor transactionsProcessor = new TransactionsProcessor(users, marketOrders);
-
-        Operation transaction;
-
-        for (int i = 0; i < 5; i++) {
-            System.out.println("Enqueuing Market Orders in the round " + (i + 1) + ":");
-            for (Trader user : users) {
-                System.out.println("User: " + user);
-                transaction = getRandomTransaction(user, cryptocurrenciesArray);
-                marketOrders.add(transaction);
-            }
-
-            System.out.println("\nProcessing Market Orders in the round " + (i + 1) + ":");
-            transactionsProcessor.processTransactions();
-        }
+        users.add(user);
+        logger.info("User registered: " + user);
     }
 
-    private static Transaction getRandomTransaction(Trader user, Cryptocurrency[] cryptocurrencies){
-        Cryptocurrency coin = cryptocurrencies[new Random().nextInt(cryptocurrencies.length)];
-        OrderType orderType = new Random().nextBoolean() ? OrderType.BUY : OrderType.SELL;
-        float amount = new Random().nextFloat() * 100;
-        
-        Transaction transaction = new Transaction(
-            UUID.randomUUID(),
-            user.getId(),
-            amount,
-            orderType,
-            coin
-        );
-        
-        return transaction;
+    public void emulateMarket() {
+        Operation transaction;
+        boolean participatesInRound;
+        Random random = new Random();
+
+        for (int i = 0; i < 5; i++) {
+            logger.info("Round " + (i + 1) + " started :");
+            for (Trader user : users) {
+                participatesInRound = random.nextBoolean();
+                if (!participatesInRound) {
+                    logger.info("User " + user + " did not participate in round " + (i + 1));
+                    continue;
+                }
+
+                transaction = Transaction.createRandomOperation(user.getId(), 100, cryptocurrencies);
+                marketOrders.add(transaction);
+                logger.info("Market order added: " + transaction);
+            }
+
+            transactionsProcessor.processTransactions();
+        }
     }
 }
