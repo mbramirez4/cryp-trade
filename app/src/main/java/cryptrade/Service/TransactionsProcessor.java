@@ -11,8 +11,8 @@ public class TransactionsProcessor {
     public TransactionsProcessor(){
     }
 
-    public TransactionsProcessor(Transaction transaction){
-        this.user = transaction.getUser();
+    public TransactionsProcessor(User user, Transaction transaction){
+        this.user = user;
         this.transaction = transaction;
     }
 
@@ -54,5 +54,7 @@ public class TransactionsProcessor {
         } else if (orderType == Transaction.SELL_ORDER_TYPE) {
             sell(amount);
         }
+        
+        user.addTransaction(transaction);
     }
 }

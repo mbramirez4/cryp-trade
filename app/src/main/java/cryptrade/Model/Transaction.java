@@ -8,7 +8,7 @@ public class Transaction {
     private String orderType;
     private float amount;
     private Cryptocurrency coin;
-    private User user;
+    private UUID userId;
     
     private boolean approved;
     private float currencyPriceUsd;
@@ -25,7 +25,7 @@ public class Transaction {
         String orderType,
         float amount,
         Cryptocurrency coin,
-        User user
+        UUID userId
     ) throws IllegalArgumentException {
         if (orderType == BUY_ORDER_TYPE) {
             this.orderType = BUY_ORDER_TYPE;
@@ -38,7 +38,7 @@ public class Transaction {
         this.id = id;
         this.amount = amount;
         this.coin = coin;
-        this.user = user;
+        this.userId = userId;
         setCurrencyPriceUsd(coin.getPriceUsd());
     }
 
@@ -47,8 +47,8 @@ public class Transaction {
         currencyPriceUsd = price * (1 + delta);
     }
 
-    public User getUser() {
-        return user;
+    public UUID getUserId() {
+        return userId;
     }
 
     public float getAmount(){
@@ -94,7 +94,7 @@ public class Transaction {
                 ", orderType='" + orderType + '\'' +
                 ", amount=" + amount +
                 ", coin=" + coin +
-                ", user=" + user.getName() +
+                ", userId=" + userId +
                 ", approved=" + approved +
                 ", currencyPriceUsd=" + currencyPriceUsd +
                 '}';
