@@ -18,6 +18,11 @@ public class UserSerializer implements JsonSerializer<User> {
         jsonUser.addProperty("name", user.getName());
         jsonUser.addProperty("id", user.getId().toString());
         jsonUser.addProperty("balance_usd", user.getBalanceCop() / Transaction.USD_TO_COP);
+
+        if (context == null) {
+            return jsonUser;
+        }
+        
         jsonUser.add("portfolio", context.serialize(user.getPortfolio()));
         jsonUser.add("transactions_history", context.serialize(user.getTransactionHistory()));
         

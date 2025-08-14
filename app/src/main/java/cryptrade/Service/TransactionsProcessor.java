@@ -75,7 +75,7 @@ public class TransactionsProcessor {
         logger.info("Started performing transaction: " + transaction + "\nCurrent user state: " + user);
         if (orderType == OrderType.BUY) {
             buy(user, transaction, amount);
-        } else if (orderType == OrderType.BUY) {
+        } else if (orderType == OrderType.SELL) {
             sell(user, transaction, amount);
         }
         
