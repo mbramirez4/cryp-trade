@@ -115,7 +115,7 @@ class MarketTest {
         
         market = new Market(users, marketOrders);
         
-        market.emulateMarket(20);
+        market.emulateMarket(100);
         
         assertTrue(marketOrders.isEmpty());
         assertTrue(testUser.getTransactionHistory().size() > 0);
