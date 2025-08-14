@@ -68,6 +68,10 @@ public class Market {
     }
 
     public void emulateMarket() throws Exception {
+        emulateMarket(10);
+    }
+
+    public void emulateMarket(int rounds) throws Exception {
         if (cryptocurrencies.length == 0 || users.size() == 0) {
             throw new Exception("No cryptocurrencies or users registered in the market");
         }
@@ -76,7 +80,7 @@ public class Market {
         boolean participatesInRound;
         Random random = new Random();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < rounds; i++) {
             logger.info("Round " + (i + 1) + " started :");
             for (Trader user : users) {
                 participatesInRound = random.nextBoolean();

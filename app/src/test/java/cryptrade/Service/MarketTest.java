@@ -3,9 +3,7 @@ package cryptrade.Service;
 import cryptrade.Interfaces.Trader;
 import cryptrade.Interfaces.Operation;
 import cryptrade.Model.User;
-import cryptrade.Model.Transaction;
 import cryptrade.Model.Cryptocurrency;
-import cryptrade.Model.OrderType;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,6 +107,18 @@ class MarketTest {
         market.registerUser(testUser);
         
         assertEquals(1, users.getCount(testUser));
+    }
+
+    @Test
+    void testEmulateMarketWithValidData() throws Exception {
+        users.add(testUser);
+        
+        market = new Market(users, marketOrders);
+        
+        market.emulateMarket(20);
+        
+        assertTrue(marketOrders.isEmpty());
+        assertTrue(testUser.getTransactionHistory().size() > 0);
     }
 
     @Test

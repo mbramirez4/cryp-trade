@@ -23,7 +23,7 @@ public class App {
         market.registerUser(new User("User 5", 500_000_000));
 
         try{
-            market.emulateMarket();
+            market.emulateMarket(20);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return;
