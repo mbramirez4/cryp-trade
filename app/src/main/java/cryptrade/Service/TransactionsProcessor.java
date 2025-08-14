@@ -42,6 +42,7 @@ public class TransactionsProcessor {
     public void buy(Trader user, Operation transaction, float amount){
         float transactionPrice = transaction.getTotalPriceCop();
         if(user.getBalanceCop() < transactionPrice){
+            logger.warn("User does not have enough funds to buy");
             transaction.setRejected();
             return;
         }
@@ -57,6 +58,7 @@ public class TransactionsProcessor {
     public void sell(Trader user, Operation transaction, float amount){
         Cryptocurrency coin = transaction.getTradingCryptocurrency();
         if (user.getPortfolio().getStock(coin) < amount){
+            logger.warn("User does not have enough stock to sell");
             transaction.setRejected();
             return;
         }
