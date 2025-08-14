@@ -32,7 +32,12 @@ public class Portfolio {
     // available cryptocurrencies, so we need to copy new objects in
     // the portfolio to avoid changing the objects in the available
     // cryptocurrencies ArrayList.
-    public void increaseStock(Cryptocurrency coin, float amount){
+    // returns false if the amount to increase is negative
+    public boolean increaseStock(Cryptocurrency coin, float amount){
+        if (amount < 0){
+            return false;
+        }
+
         UserCoin userCoin = getUserCoinItem(coin);
         if (userCoin == null){
             UserCoin newUserCoin = new UserCoin(coin.copy());
@@ -42,11 +47,17 @@ public class Portfolio {
         }
 
         userCoin.increaseStock(amount);
+        return true;
     }
 
-    // returns false if the amount to decrease is greater than the stock
-    // or if the coin is not in the portfolio
+    // returns false if the amount to decrease is greater than the stock,
+    // if the coin is not in the portfolio, or if the amount to decrease
+    // is negative
     public boolean decreaseStock(Cryptocurrency coin, float amount){
+        if (amount < 0){
+            return false;
+        }
+
         UserCoin userCoin = getUserCoinItem(coin);
         if (userCoin == null){
             return false;

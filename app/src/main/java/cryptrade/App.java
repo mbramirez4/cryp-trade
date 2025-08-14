@@ -22,7 +22,12 @@ public class App {
         market.registerUser(new User("User 4", 400_000_000));
         market.registerUser(new User("User 5", 500_000_000));
 
-        market.emulateMarket();
+        try{
+            market.emulateMarket();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 
         market.createReport("final_report.json");
     }

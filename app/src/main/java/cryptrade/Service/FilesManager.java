@@ -2,7 +2,6 @@ package cryptrade.Service;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

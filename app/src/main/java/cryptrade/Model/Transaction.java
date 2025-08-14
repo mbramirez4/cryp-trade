@@ -85,7 +85,11 @@ public class Transaction implements Operation {
         return coin;
     }
 
-    public static Transaction createRandomOperation(UUID userId, float maxAmount,Cryptocurrency[] cryptocurrencies){
+    public static Transaction createRandomOperation(UUID userId, float maxAmount, Cryptocurrency[] cryptocurrencies) throws IllegalArgumentException {
+        if (cryptocurrencies.length == 0) {
+            throw new IllegalArgumentException("Invalid cryptocurrencies array");
+        }
+
         Random random = new Random();
         
         return new Transaction(

@@ -19,28 +19,21 @@ public class Cryptocurrency {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getSymbol() {
         return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public float getPriceUsd() {
         return Float.valueOf(price_usd);
+    }
+
+    public Cryptocurrency copy(){
+        Cryptocurrency coin = new Cryptocurrency(this.id, this.symbol, this.name, this.price_usd);
+        return coin;
     }
 
     @Override
@@ -51,11 +44,6 @@ public class Cryptocurrency {
                 ", name='" + name + '\'' +
                 ", price_usd='" + price_usd + '\'' +
                 '}';
-    }
-
-    public Cryptocurrency copy(){
-        Cryptocurrency coin = new Cryptocurrency(this.id, this.symbol, this.name, this.price_usd);
-        return coin;
     }
 
     @Override
@@ -73,13 +61,5 @@ public class Cryptocurrency {
         }
 
         return false;
-    }
-
-    // public static void main(String[] args) {
-    //     Cryptocurrency coin = Cryptocurrency(
-    //         "", "", "", "11.27"
-    //     )
-    //     System.out.println(coin.getPriceUsd())
-    // }
-    
+    }    
 }
